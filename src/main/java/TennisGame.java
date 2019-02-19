@@ -1,14 +1,22 @@
 public class TennisGame {
-    String scoreGamePlayerOne;
-    String scoreGamePlayerTow;
+    private String scoreGamePlayerOne;
+    private String scoreGamePlayerTow;
     Integer playerOneGameWins;
     Integer playerTowGameWins;
+    private Integer scoreSetPlayerOne;
+    private Integer scoreSetPlayerTow;
+    Integer scoreTieBreakPlayerOne;
+    Integer scoreTieBreakPlayerTow;
 
     public TennisGame(){
         this.scoreGamePlayerOne= "0";
         this.scoreGamePlayerTow= "0";
         this.playerOneGameWins = 0;
-        this.playerTowGameWins =0;
+        this.playerTowGameWins = 0;
+        this.scoreSetPlayerOne = 0;
+        this.scoreSetPlayerTow = 0;
+        this.scoreTieBreakPlayerOne = 0;
+        this.scoreTieBreakPlayerTow = 0;
     }
 
     public String getScoreGame() {
@@ -21,14 +29,86 @@ public class TennisGame {
         return scoreGame.toString();
     }
 
-    public void firstPlayerWinsOnePoint() {
-        playerOneGameWins = playerOneGameWins + 1;
-        updateScoreGameForEachPlayer();
+    public String getScoreSet() {
+        StringBuilder scoreSet = new StringBuilder();
+
+        scoreSet.append(scoreSetPlayerOne);
+        scoreSet.append(" _ ");
+        scoreSet.append(scoreSetPlayerTow);
+
+        return scoreSet.toString();
     }
 
+    public String getScoreTieBreakPoint() {
+        StringBuilder scoreTieBreak = new StringBuilder();
+        scoreTieBreak.append(scoreTieBreakPlayerOne.toString());
+        scoreTieBreak.append(" _ ");
+        scoreTieBreak.append(scoreTieBreakPlayerTow.toString());
+        return (scoreTieBreak.toString());
+    }
+
+    public void firstPlayerWinsOnePoint() {
+        if (scoreSetPlayerTow == 6 && scoreSetPlayerOne == 6)
+            firstPlayerWinsOneTieBreakPoint();
+        else
+            firstPlayerWinsOneGamePoint();
+    }
+
+    private void firstPlayerWinsOneGamePoint() {
+        playerOneGameWins = playerOneGameWins + 1;
+        updateScoreGameForEachPlayer();
+        if(isThereGameWin()) firstPlayerWinsOneGame();
+    }
+
+    private void firstPlayerWinsOneGame() {
+        firstPlayerAddsOnePointToScoreSet();
+        playerOneGameWins =0;
+        playerTowGameWins =0;
+    }
+
+    public  void firstPlayerWinsOneTieBreakPoint() {
+        scoreTieBreakPlayerOne = scoreTieBreakPlayerOne + 1;
+         if (isThereWinTieBreak()) {
+             firstPlayerWinsTieBreak();
+         }
+    }
+
+    private void firstPlayerWinsTieBreak() {
+        scoreTieBreakPlayerOne = 0;
+        scoreTieBreakPlayerTow = 0;
+        firstPlayerAddsOnePointToScoreSet();
+    }
+
+    private boolean isThereWinTieBreak() {
+        return (scoreTieBreakPlayerOne >= 7 || scoreTieBreakPlayerTow >= 7) && (Math.abs(scoreTieBreakPlayerOne - scoreTieBreakPlayerTow) >= 2);
+
+    }
+
+
     public void secondPlayerWinsOnePoint() {
+        if (scoreSetPlayerTow == 6 && scoreSetPlayerOne == 6)
+            secondPlayerWinsOneTieBreakPoint();
+        else
+            secondPlayerWinsOneGamePoint();
+    }
+
+    private void secondPlayerWinsOneGamePoint() {
         playerTowGameWins = playerTowGameWins + 1;
         updateScoreGameForEachPlayer();
+        if(isThereGameWin()) secondPlayerWinsOneGame();
+    }
+
+    public void secondPlayerWinsOneTieBreakPoint() {
+        scoreTieBreakPlayerTow = scoreTieBreakPlayerTow+1;
+        if (isThereWinTieBreak()) {
+            secondPlayerWinsTieBreak();
+        }
+    }
+
+    private void secondPlayerWinsTieBreak() {
+        scoreTieBreakPlayerOne = 0;
+        scoreTieBreakPlayerTow = 0;
+        secondPlayerAddsOnePointToScoreSet();
     }
 
     private void updateScoreGameForEachPlayer() {
@@ -54,8 +134,16 @@ public class TennisGame {
 
     }
 
+
+    private void secondPlayerWinsOneGame() {
+        secondPlayerAddsOnePointToScoreSet();
+        playerOneGameWins =0;
+        playerTowGameWins =0;
+    }
+
+
     private boolean isThereDeuce() {
-        return (playerOneGameWins >= 4 && playerTowGameWins >= 4) && (playerOneGameWins == playerTowGameWins);
+        return (playerOneGameWins >= 4 && playerTowGameWins >= 4) && (playerOneGameWins.equals(playerTowGameWins));
     }
 
     private boolean isThereGameWin() {
@@ -85,4 +173,12 @@ public class TennisGame {
         }
     }
 
+
+    public void firstPlayerAddsOnePointToScoreSet() {
+        scoreSetPlayerOne = scoreSetPlayerOne + 1;
+    }
+
+    public void secondPlayerAddsOnePointToScoreSet() {
+        scoreSetPlayerTow = scoreSetPlayerTow + 1;
+    }
 }
