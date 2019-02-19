@@ -93,7 +93,7 @@ public class TennisGameTest {
             "1 , 3, 4",
             "2 , 4, 3"
     })
-    public void should_display_DEUCE_Deuce_when_the_player_how_has_40_as_score_wins_one_point_and_the_score_was_40_to_ADV(int player, int firstPlayerWins, int secondPlayerWins) {
+    public void should_display_DEUCE_DUECE_when_the_player_how_has_40_as_score_wins_one_point_and_the_score_was_40_to_ADV(int player, int firstPlayerWins, int secondPlayerWins) {
         TennisGame tennisGame = new TennisGame();
 
         updatePlayersWins(firstPlayerWins, secondPlayerWins,tennisGame);
@@ -136,18 +136,27 @@ public class TennisGameTest {
 
     @Test
     @Parameters({
-            "1",
-            "2"
+            "1, 0, 0",
+            "2, 0, 0",
+            "1, 1, 0",
+            "2, 1, 1",
+            "1, 4, 3",
+            "2, 5, 5"
     })
-    public void should_display_zero_zero_as_set_score_when_a_player_wins_one_point_but_does_not_win_the_game(int player){
+    public void should_display_the_same_score_set_when_a_player_wins_one_point_but_does_not_win_the_game(int player, Integer scoreSetFirstPlayer, Integer scorSetSecondPlayer){
+        StringBuilder score =new StringBuilder();
+        score.append(scoreSetFirstPlayer.toString());
+        score.append(" _ ");
+        score.append(scorSetSecondPlayer.toString());
+
         TennisGame tennisGame = new TennisGame();
 
-        updatePlayersScoreSet(0,0,tennisGame);
-        updatePlayersWins(2, 0,tennisGame);
+        updatePlayersScoreSet(scoreSetFirstPlayer, scorSetSecondPlayer, tennisGame);
+        updatePlayersWins(1, 1,tennisGame);
 
         playerWinsOnePoint(player, tennisGame);
 
-        assertThat(tennisGame.getScoreSet()).isEqualTo("0 _ 0");
+        assertThat(tennisGame.getScoreSet()).isEqualTo(score.toString());
     }
 
     @Test
@@ -312,6 +321,120 @@ public class TennisGameTest {
         assertThat(tennisGame.getScoreSet()).isEqualTo("6 _ 7");
     }
 
+    @Test
+    @Parameters({
+            "6,5",
+            "5,5",
+            "5,4",
+            "2,4",
+            "3,4"
+
+    })
+    public void should_display_the_match_has_not_finished_yet_when_no_one_wins_the_tennis_game (int firstPlayerScoreSet, int secondPlayerScoreSet){
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(firstPlayerScoreSet, secondPlayerScoreSet, tennisGame);
+        updatePlayersWins(2,3, tennisGame);
+        tennisGame.secondPlayerWinsOnePoint();
+        assertThat(tennisGame.getTheWinner()).isEqualTo("the match has not finished yet");
+    }
+
+    @Test
+    @Parameters({
+            "5,6",
+            "5,5",
+            "4,5",
+            "4,2",
+            "3,4"
+
+    })
+
+    public void name (int firstPlayerScoreSet, int secondPlayerScoreSet){
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(firstPlayerScoreSet, secondPlayerScoreSet, tennisGame);
+        updatePlayersWins(2,3, tennisGame);
+        tennisGame.firstPlayerWinsOnePoint();
+
+        assertThat(tennisGame.getTheWinner()).isEqualTo("the match has not finished yet");
+    }
+
+    @Test
+    @Parameters({
+            "5,6",
+            "4,5",
+            "3,5",
+            "2,5",
+            "1,5",
+            "0,5"
+    })
+    public void should_display_player_tow_as_winner_when_he_wins_at_least_6_set_and_the_difference_between_the_score_set_of_the_players_is_at_least_2(int firstPlayerScoreSet, int secondPlayerScoreSet){
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(firstPlayerScoreSet, secondPlayerScoreSet,tennisGame);
+        updatePlayersWins(2,3, tennisGame);
+        tennisGame.secondPlayerWinsOnePoint();
+        assertThat(tennisGame.getTheWinner()).isEqualTo("Player Tow");
+    }
+
+    @Test
+    @Parameters({
+            "6,5",
+            "5,4",
+            "5,3",
+            "5,2",
+            "5,1",
+            "5,0"
+    })
+    public void should_display_player_One_as_winner_when_he_wins_at_least_6_set_and_the_difference_between_the_score_set_of_the_players_is_at_least_2(int firstPlayerScoreSet, int secondPlayerScoreSet){
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(firstPlayerScoreSet, secondPlayerScoreSet,tennisGame);
+        updatePlayersWins(3,2, tennisGame);
+        tennisGame.firstPlayerWinsOnePoint();
+        assertThat(tennisGame.getTheWinner()).isEqualTo("Player One");
+    }
+
+    @Test
+    @Parameters({
+            "1, 6, 5",
+            "2, 5, 6"
+    })
+    public void should_display_the_player_how_wins_the_tie_break_as_a_winner(Integer player, Integer scoreTieBreakPlayerOne, Integer scoreTieBreakPlayerTow ){
+        String winner =null;
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(6, 6,tennisGame);
+        updatePlayersScoreTieBreak(scoreTieBreakPlayerOne, scoreTieBreakPlayerTow, tennisGame);
+
+        playerWinsOnePoint(player, tennisGame);
+
+        if(player ==1) winner ="Player One";
+        if(player ==2) winner ="Player Tow";
+
+        assertThat(tennisGame.getTheWinner()).isEqualTo(winner);
+    }
+
+    @Test
+    @Parameters({
+            "1, 5, 3",
+            "2, 2, 4",
+            "1, 6, 6",
+            "1, 6, 7",
+            "2, 6, 6",
+            "2, 7, 6"
+    })
+    public void name(Integer player, Integer scoreTieBreakPlayerOne, Integer scoreTieBreakPlayerTow ){
+        TennisGame tennisGame = new TennisGame();
+
+        updatePlayersScoreSet(6, 6,tennisGame);
+        updatePlayersScoreTieBreak(scoreTieBreakPlayerOne, scoreTieBreakPlayerTow, tennisGame);
+
+        playerWinsOnePoint(player, tennisGame);
+
+        assertThat(tennisGame.getTheWinner()).isEqualTo("the match has not finished yet");
+    }
+
 
     private void updatePlayersScoreTieBreak(Integer scoreTieBreakPlayerOne, Integer scoreTieBreakPlayerTow, TennisGame tennisGame) {
         for (int i = 0; i < scoreTieBreakPlayerOne; i++)
@@ -337,9 +460,9 @@ public class TennisGameTest {
     private void updatePlayersScoreSet(int scoreSetPlayerOne, int scoreSetPlayerTow, TennisGame tennisGame) {
 
         for(int i = 0 ; i<scoreSetPlayerOne ; i++)
-            tennisGame.firstPlayerAddsOnePointToScoreSet();
+            tennisGame.scoreSetPlayerOne++;
 
         for(int i = 0 ; i<scoreSetPlayerTow ; i++)
-            tennisGame.secondPlayerAddsOnePointToScoreSet();
+            tennisGame.scoreSetPlayerTow++;
     }
 }
